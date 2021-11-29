@@ -1,4 +1,4 @@
-#include "a4.h"
+#include "oclgrind.h"
 
 int main(int argc, char* argv[])
 {

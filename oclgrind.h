@@ -1,5 +1,5 @@
-#ifndef A4_H
-#define A4_H
+#ifndef OCLGRIND_H
+#define OCLGRIND_H
 
 #include <stdio.h>
 #include <stdlib.h>
