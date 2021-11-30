@@ -18,9 +18,9 @@
 
 cl_device_id create_device();
 cl_program build_program(cl_context ctx, cl_device_id dev, const char* filename);
+char *createGrid(int gridDimensions, int pattern);
 
 #endif
-
 
 int main(int argc, char *argv[])
 {
@@ -132,4 +132,12 @@ cl_program build_program(cl_context ctx, cl_device_id dev, const char *filename)
    }
 
    return program;
+}
+
+char *createGrid(int gridDimensions, int pattern)
+{
+   // Allocate memory
+   char * grid = (char*)malloc(sizeof(char) * (gridDimensions * gridDimensions) + 1);
+
+   return grid;
 }
