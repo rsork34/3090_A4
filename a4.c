@@ -21,6 +21,7 @@
 cl_device_id create_device();
 cl_program build_program(cl_context ctx, cl_device_id dev, const char *filename);
 
+// Grid initialization methods
 char *createGrid();
 void randomGridInit(char *grid);
 void flipFlopGridInit(char *grid);
@@ -28,13 +29,14 @@ void spiderGridInit(char *grid);
 void gliderGridInit(char *grid);
 void faceGridInit(char *grid);
 
+// Argument validation
+void validateArguments(int numArgs, char **args);
+bool isValidArg(char *toCheck);
+
 // Global variables initilized with DEFAULT values
 int KERNELS = 1;
 int GRIDSIZE = 20;
 int INITIALCONFIG = 0;
-
-void validateArguments(int numArgs, char **args);
-bool isValidArg(char *toCheck);
 
 #endif
 
