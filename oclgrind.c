@@ -21,6 +21,8 @@ cl_program build_program(cl_context ctx, cl_device_id dev, const char* filename)
 
 #endif
 
+void displayGrid(char* grid, int dimension);
+
 
 int main(int argc, char *argv[])
 {
@@ -132,4 +134,18 @@ cl_program build_program(cl_context ctx, cl_device_id dev, const char *filename)
    }
 
    return program;
+}
+
+void displayGrid(char* grid, int dimension){
+   for(int i = 0; i<dimension; i++){
+      for(int line = 0; line<dimension; line++){
+         printf("--"); //line separating each row
+      }
+      printf("-");
+      printf("\n");
+      for(int j = 0; j<dimension; j++){
+         printf("|%c", grid[i*j]); //prints the value at each index of the grid
+      }
+      printf("|\n");
+   }
 }
