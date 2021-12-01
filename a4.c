@@ -152,18 +152,22 @@ void validateArguments(int numArgs, char **args) {
 
 	// flags are at odd-numbered indicies
 	for (int i = 1; i < numArgs; i = i + 2) {
-		if (strncmp(args[i], "-n", 2) == 0) {
+		if (strncmp(args[i], "-n", strlen(args[i])) == 0) {
 			if (!isValidArg(args[i+1])) {
-				printf("Error: Number of Kernels must be a valid number.\n");
+				printf("Error: Number of Kernels must be a valid non-negative number greater than 1.\n");
 				exit(1);
 			}
 			else {
 				KERNELS = atoi(args[i+1]);
+				if (KERNELS < 1) {
+					printf("Error: Number of Kerneles must be greater than or equal to 1.\n");
+					exit(1);
+				}
 			}
 		}
-		else if (strncmp(args[i], "-s", 2) == 0) {
+		else if (strncmp(args[i], "-s", strlen(args[i])) == 0) {
 			if (!isValidArg(args[i+1])) {
-				printf("Error: Grid Size must be a valid number.\n");
+				printf("Error: Grid Size must be a valid non-negative number greater than 0.\n");
 				exit(1);
 			}
 			else {
@@ -174,9 +178,9 @@ void validateArguments(int numArgs, char **args) {
 				}
 			}
 		}
-		else if (strncmp(args[i], "-i", 2) == 0) {
+		else if (strncmp(args[i], "-i", strlen(args[i])) == 0) {
 			if (!isValidArg(args[i+1])) {
-				printf("Error: Initial Configuration must be a valid number.\n");
+				printf("Error: Initial Configuration must be a valid non-negative number betwen 0 and 4 inclusive.\n");
 				exit(1);
 			}
 			else {
