@@ -160,7 +160,7 @@ void validateArguments(int numArgs, char **args) {
 			else {
 				KERNELS = atoi(args[i+1]);
 				if (KERNELS < 1) {
-					printf("Error: Number of Kerneles must be greater than or equal to 1.\n");
+					printf("Error: Number of Kernels must be a valid non-negative number greater than 1.\n");
 					exit(1);
 				}
 			}
@@ -173,7 +173,7 @@ void validateArguments(int numArgs, char **args) {
 			else {
 				GRIDSIZE = atoi(args[i+1]);
 				if (GRIDSIZE == 0) {
-					printf("Error: Grid Size must be greater than 0.\n");
+					printf("Error: Grid Size must be a valid non-negative number greater than 0.\n");
 					exit(1);
 				}
 			}
@@ -186,7 +186,7 @@ void validateArguments(int numArgs, char **args) {
 			else {
 				INITIALCONFIG = atoi(args[i+1]);
 				if (INITIALCONFIG > 4) {
-					printf("Error: Initial Configruation must be a number between 0 and 4, inclusive.\n");
+					printf("Error: Initial Configuration must be a valid non-negative number betwen 0 and 4 inclusive.\n");
 					exit(1);
 				}
 			}
