@@ -24,6 +24,7 @@ void randomGridInit(char *grid, int dimensions);
 void flipFlopGridInit(char *grid, int gridDimensions);
 void spiderGridInit(char *grid, int gridDimensions);
 void gliderGridInit(char *grid, int gridDimensions);
+void faceGridInit(char *grid, int gridDimensions);
 
 #endif
 
@@ -163,6 +164,9 @@ char *createGrid(int gridDimensions, int pattern)
    case 3:
       gliderGridInit(grid, gridDimensions);
       break;
+   case 4:
+      faceGridInit(grid, gridDimensions);
+      break;
 
    default:
       break;
@@ -213,4 +217,11 @@ void gliderGridInit(char *grid, int gridDimensions)
 {
    flipFlopGridInit(grid, gridDimensions);
    grid[gridDimensions / 2 + 2] = 'X';
+}
+
+// TODO: figure out what happens if grid row length < 7
+void faceGridInit(char *grid, int gridDimensions)
+{
+   spiderGridInit(grid, gridDimensions);
+   grid[gridDimensions / 2 + 3] = 'X';
 }
