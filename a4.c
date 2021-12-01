@@ -307,15 +307,11 @@ bool isValidArg(char *toCheck) {
 }
 
 void displayGrid(char* grid){
-   for(int i = 0; i<GRIDSIZE; i++){
-      for(int line = 0; line<GRIDSIZE; line++){
-         printf("--"); //line separating each row
+   for(int i = 0; i<GRIDSIZE*GRIDSIZE; i++){
+      if( i % GRIDSIZE == 0){
+         printf("\n");
       }
-      printf("-");
-      printf("\n");
-      for(int j = 0; j<GRIDSIZE; j++){
-         printf("|%c", grid[i*j]); //prints the value at each index of the grid
-      }
-      printf("|\n");
+      printf(" %c ", grid[i]);
    }
+   printf("\n");
 }
