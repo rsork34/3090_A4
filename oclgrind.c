@@ -30,11 +30,20 @@ void faceGridInit(char *grid, int gridDimensions);
 
 int main(int argc, char *argv[])
 {
+   // TODO: get user value
+   int gridDimensions = 10;
+   int pattern = 1;
+
    cl_device_id device;
    cl_context context;
    cl_program program;
+   cl_command_queue queue;
    cl_int err, num_groups;
    size_t local_size, global_size;
+   cl_mem inputGrid, outputGrid;
+
+   char * grid = createGrid(gridDimensions, pattern);
+   int gridSize = gridDimensions * gridDimensions + 1;
 
    /* Create device and context */
    device = create_device();
@@ -48,12 +57,36 @@ int main(int argc, char *argv[])
    /* Build program */
    program = build_program(context, device, PROGRAM_FILE);
 
+   // Create grid buffers
+   inputGrid = clCreateBuffer(context, CL_MEM_READ_ONLY |
+         CL_MEM_COPY_HOST_PTR, gridSize * sizeof(char), grid, &err);
+   if(err < 0) {
+      perror("Couldn't create a buffer");
+      exit(1);   
+   };
+   outputGrid = clCreateBuffer(context, CL_MEM_READ_WRITE |
+         CL_MEM_COPY_HOST_PTR, gridSize * sizeof(char), grid, &err);
+   if(err < 0) {
+      perror("Couldn't create a buffer");
+      exit(1);   
+   };
+
+   // Create command queue
+   queue = clCreateCommandQueue(context, device, 0, &err);
+   if(err < 0) {
+      perror("Couldn't create a command queue");
+      exit(1);   
+   };
+
    /* Create data buffer */
    // TODO: FIGURE THIS OUT
    global_size = 8;
    local_size = 4;
    num_groups = global_size / local_size;
 
+   clReleaseCommandQueue(queue);
+   clReleaseProgram(program);
+   clReleaseContext(context);
    return 0;
 }
 
