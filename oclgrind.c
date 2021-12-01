@@ -23,7 +23,7 @@ cl_program build_program(cl_context ctx, cl_device_id dev, const char* filename)
 
 #endif
 
-
+// Global variables initilized with DEFAULT values
 int KERNELS = 1;
 int GRIDSIZE = 20;
 int INITIALCONFIG = 0;
@@ -35,6 +35,7 @@ bool isValidArg(char *toCheck);
 int main(int argc, char *argv[]) {
 
 	validateArguments(argc, argv);
+	// print statements below TO BE REMOVED
 	printf("KERNELS %d\n", KERNELS);
 	printf("GRIDSIZE %d\n", GRIDSIZE);
 	printf("INITIALCONFIG %d\n", INITIALCONFIG);
