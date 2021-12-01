@@ -35,7 +35,7 @@ int INITIALCONFIG = 0;
 
 void validateArguments(int numArgs, char **args);
 bool isValidArg(char *toCheck);
-void displayGrid(char* grid, int dimension);
+void displayGrid(char* grid);
 
 #endif
 
@@ -302,14 +302,14 @@ bool isValidArg(char *toCheck) {
 	return true;
 }
 
-void displayGrid(char* grid, int dimension){
-   for(int i = 0; i<dimension; i++){
-      for(int line = 0; line<dimension; line++){
+void displayGrid(char* grid){
+   for(int i = 0; i<GRIDSIZE; i++){
+      for(int line = 0; line<GRIDSIZE; line++){
          printf("--"); //line separating each row
       }
       printf("-");
       printf("\n");
-      for(int j = 0; j<dimension; j++){
+      for(int j = 0; j<GRIDSIZE; j++){
          printf("|%c", grid[i*j]); //prints the value at each index of the grid
       }
       printf("|\n");
