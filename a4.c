@@ -21,12 +21,12 @@
 cl_device_id create_device();
 cl_program build_program(cl_context ctx, cl_device_id dev, const char *filename);
 
-char *createGrid(int gridDimensions, int pattern);
-void randomGridInit(char *grid, int dimensions);
-void flipFlopGridInit(char *grid, int gridDimensions);
-void spiderGridInit(char *grid, int gridDimensions);
-void gliderGridInit(char *grid, int gridDimensions);
-void faceGridInit(char *grid, int gridDimensions);
+char *createGrid();
+void randomGridInit(char *grid);
+void flipFlopGridInit(char *grid);
+void spiderGridInit(char *grid);
+void gliderGridInit(char *grid);
+void faceGridInit(char *grid);
 
 // Global variables initilized with DEFAULT values
 int KERNELS = 1;
@@ -99,32 +99,32 @@ cl_device_id create_device() {
 
 /* Create program from a file and compile it */
 
-char *createGrid(int gridDimensions, int pattern)
+char *createGrid()
 {
    // Allocate memory
-   char *grid = (char *)calloc(gridDimensions * gridDimensions + 1, sizeof(char));
-   for (int i = 0; i < gridDimensions * gridDimensions; i++)
+   char *grid = (char *)calloc(GRIDSIZE * GRIDSIZE + 1, sizeof(char));
+   for (int i = 0; i < GRIDSIZE * GRIDSIZE; i++)
    {
       grid[i] = '.';
    }
-   grid[gridDimensions * gridDimensions] = '\0';
+   grid[GRIDSIZE * GRIDSIZE] = '\0';
 
-   switch (pattern)
+   switch (INITIALCONFIG)
    {
    case 0:
-      randomGridInit(grid, gridDimensions);
+      randomGridInit(grid);
       break;
    case 1:
-      flipFlopGridInit(grid, gridDimensions);
+      flipFlopGridInit(grid);
       break;
    case 2:
-      spiderGridInit(grid, gridDimensions);
+      spiderGridInit(grid);
       break;
    case 3:
-      gliderGridInit(grid, gridDimensions);
+      gliderGridInit(grid);
       break;
    case 4:
-      faceGridInit(grid, gridDimensions);
+      faceGridInit(grid);
       break;
 
    default:
@@ -134,13 +134,13 @@ char *createGrid(int gridDimensions, int pattern)
    return grid;
 }
 
-void randomGridInit(char *grid, int dimensions)
+void randomGridInit(char *grid)
 {
    // Initialize random seed
    srand(time(NULL));
 
    // Fills only the first row
-   for (int i = 0; i < dimensions; i++)
+   for (int i = 0; i < GRIDSIZE; i++)
    {
       // 50% chance
       if (rand() / (RAND_MAX / 3) == 0)
@@ -152,19 +152,19 @@ void randomGridInit(char *grid, int dimensions)
 }
 
 // TODO: figure out what happens if grid row length < 4
-void flipFlopGridInit(char *grid, int gridDimensions)
+void flipFlopGridInit(char *grid)
 {
-   int centerIndex = gridDimensions / 2;
+   int centerIndex = GRIDSIZE / 2;
    grid[centerIndex - 2] = 'X';
    grid[centerIndex] = 'X';
    grid[centerIndex + 1] = 'X';
 }
 
 // TODO: figure out what happens if grid row length < 6
-void spiderGridInit(char *grid, int gridDimensions)
+void spiderGridInit(char *grid)
 {
    int spiderLength = 6;
-   int startIndex = (gridDimensions / 2) - 3;
+   int startIndex = (GRIDSIZE / 2) - 3;
    for (int i = startIndex; i < startIndex + spiderLength; i++)
    {
       grid[i] = 'X';
@@ -172,17 +172,17 @@ void spiderGridInit(char *grid, int gridDimensions)
 }
 
 // TODO: figure out what happens if grid row length < 5
-void gliderGridInit(char *grid, int gridDimensions)
+void gliderGridInit(char *grid)
 {
-   flipFlopGridInit(grid, gridDimensions);
-   grid[gridDimensions / 2 + 2] = 'X';
+   flipFlopGridInit(grid);
+   grid[GRIDSIZE / 2 + 2] = 'X';
 }
 
 // TODO: figure out what happens if grid row length < 7
-void faceGridInit(char *grid, int gridDimensions)
+void faceGridInit(char *grid)
 {
-   spiderGridInit(grid, gridDimensions);
-   grid[gridDimensions / 2 + 3] = 'X';
+   spiderGridInit(grid);
+   grid[GRIDSIZE / 2 + 3] = 'X';
 }
 
 cl_program build_program(cl_context ctx, cl_device_id dev, const char *filename) {
