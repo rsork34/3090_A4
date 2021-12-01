@@ -29,6 +29,9 @@ void spiderGridInit(char *grid);
 void gliderGridInit(char *grid);
 void faceGridInit(char *grid);
 
+//display grid method
+void displayGrid(char* grid);
+
 // Argument validation
 void validateArguments(int numArgs, char **args);
 bool isValidArg(char *toCheck);
@@ -301,4 +304,14 @@ bool isValidArg(char *toCheck) {
 		}
 	}
 	return true;
+}
+
+void displayGrid(char* grid){
+   for(int i = 0; i<GRIDSIZE*GRIDSIZE; i++){
+      if( i % GRIDSIZE == 0){
+         printf("\n");
+      }
+      printf(" %c ", grid[i]);
+   }
+   printf("\n");
 }
