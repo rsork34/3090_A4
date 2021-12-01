@@ -17,8 +17,10 @@
 #endif
 
 cl_device_id create_device();
-cl_program build_program(cl_context ctx, cl_device_id dev, const char* filename);
+cl_program build_program(cl_context ctx, cl_device_id dev, const char *filename);
+
 char *createGrid(int gridDimensions, int pattern);
+void randomGridInit(char *grid, int dimensions);
 
 #endif
 
@@ -137,7 +139,39 @@ cl_program build_program(cl_context ctx, cl_device_id dev, const char *filename)
 char *createGrid(int gridDimensions, int pattern)
 {
    // Allocate memory
-   char * grid = (char*)malloc(sizeof(char) * (gridDimensions * gridDimensions) + 1);
+   char *grid = (char *)calloc(gridDimensions * gridDimensions + 1, sizeof(char));
+   for (int i = 0; i < gridDimensions * gridDimensions; i++)
+   {
+      grid[i] = '.';
+   }
+   grid[gridDimensions * gridDimensions] = '\0';
+
+   switch (pattern)
+   {
+   case 0:
+      randomGridInit(grid, gridDimensions);
+      break;
+
+   default:
+      break;
+   }
 
    return grid;
+}
+
+void randomGridInit(char *grid, int dimensions)
+{
+   // Initialize random seed
+   srand(time(NULL));
+
+   // Fills only the first row
+   for (int i = 0; i < dimensions; i++)
+   {
+      // 50% chance
+      if (rand() / (RAND_MAX / 3) == 0)
+      {
+         // TODO: based on rank
+         grid[i] = 'X';
+      }
+   }
 }
