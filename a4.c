@@ -1,7 +1,7 @@
 #ifndef OCLGRIND_H
 #define OCLGRIND_H
 
-#define PROGRAM_FILE "oclgrind.cl"
+#define PROGRAM_FILE "a4.cl"
 #define KERNEL_FUNC "oclgrind"
 
 #include <math.h>
