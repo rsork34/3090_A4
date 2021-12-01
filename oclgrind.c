@@ -21,6 +21,7 @@ cl_program build_program(cl_context ctx, cl_device_id dev, const char *filename)
 
 char *createGrid(int gridDimensions, int pattern);
 void randomGridInit(char *grid, int dimensions);
+void flipFlopGridInit(char *grid, int gridDimensions);
 
 #endif
 
@@ -151,6 +152,9 @@ char *createGrid(int gridDimensions, int pattern)
    case 0:
       randomGridInit(grid, gridDimensions);
       break;
+   case 1:
+      flipFlopGridInit(grid, gridDimensions);
+      break;
 
    default:
       break;
@@ -174,4 +178,12 @@ void randomGridInit(char *grid, int dimensions)
          grid[i] = 'X';
       }
    }
+}
+
+void flipFlopGridInit(char *grid, int gridDimensions)
+{
+   int centerIndex = gridDimensions / 2;
+   grid[centerIndex - 2] = 'X';
+   grid[centerIndex] = 'X';
+   grid[centerIndex + 1] = 'X';
 }
