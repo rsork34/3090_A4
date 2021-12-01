@@ -22,6 +22,7 @@ cl_program build_program(cl_context ctx, cl_device_id dev, const char *filename)
 char *createGrid(int gridDimensions, int pattern);
 void randomGridInit(char *grid, int dimensions);
 void flipFlopGridInit(char *grid, int gridDimensions);
+void spiderGridInit(char *grid, int gridDimensions);
 
 #endif
 
@@ -155,6 +156,9 @@ char *createGrid(int gridDimensions, int pattern)
    case 1:
       flipFlopGridInit(grid, gridDimensions);
       break;
+   case 2:
+      spiderGridInit(grid, gridDimensions);
+      break;
 
    default:
       break;
@@ -180,10 +184,22 @@ void randomGridInit(char *grid, int dimensions)
    }
 }
 
+// TODO: figure out what happens if grid row length < 4
 void flipFlopGridInit(char *grid, int gridDimensions)
 {
    int centerIndex = gridDimensions / 2;
    grid[centerIndex - 2] = 'X';
    grid[centerIndex] = 'X';
    grid[centerIndex + 1] = 'X';
+}
+
+// TODO: figure out what happens if grid row length < 6
+void spiderGridInit(char *grid, int gridDimensions)
+{
+   int spiderLength = 6;
+   int startIndex = (gridDimensions / 2) - 3;
+   for (int i = startIndex; i < startIndex + spiderLength; i++)
+   {
+      grid[i] = 'X';
+   }
 }
