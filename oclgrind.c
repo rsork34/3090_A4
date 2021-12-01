@@ -37,12 +37,13 @@ int main(int argc, char *argv[])
    cl_device_id device;
    cl_context context;
    cl_program program;
+   cl_kernel kernel;
    cl_command_queue queue;
    cl_int err, num_groups;
    size_t local_size, global_size;
-   cl_mem inputGrid, outputGrid;
+   cl_mem inputGridBuffer, outputGridBuffer;
 
-   char * grid = createGrid(gridDimensions, pattern);
+   char *grid = createGrid(gridDimensions, pattern);
    int gridSize = gridDimensions * gridDimensions + 1;
 
    /* Create device and context */
@@ -57,33 +58,54 @@ int main(int argc, char *argv[])
    /* Build program */
    program = build_program(context, device, PROGRAM_FILE);
 
-   // Create grid buffers
-   inputGrid = clCreateBuffer(context, CL_MEM_READ_ONLY |
-         CL_MEM_COPY_HOST_PTR, gridSize * sizeof(char), grid, &err);
-   if(err < 0) {
-      perror("Couldn't create a buffer");
-      exit(1);   
-   };
-   outputGrid = clCreateBuffer(context, CL_MEM_READ_WRITE |
-         CL_MEM_COPY_HOST_PTR, gridSize * sizeof(char), grid, &err);
-   if(err < 0) {
-      perror("Couldn't create a buffer");
-      exit(1);   
-   };
-
-   // Create command queue
-   queue = clCreateCommandQueue(context, device, 0, &err);
-   if(err < 0) {
-      perror("Couldn't create a command queue");
-      exit(1);   
-   };
-
-   /* Create data buffer */
    // TODO: FIGURE THIS OUT
    global_size = 8;
    local_size = 4;
    num_groups = global_size / local_size;
 
+   // Create grid buffers
+   inputGridBuffer = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, gridSize * sizeof(char), grid, &err);
+   if (err < 0)
+   {
+      perror("Couldn't create a buffer");
+      exit(1);
+   };
+   outputGridBuffer = clCreateBuffer(context, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, gridSize * sizeof(char), grid, &err);
+   if (err < 0)
+   {
+      perror("Couldn't create a buffer");
+      exit(1);
+   };
+
+   // Create command queue
+   queue = clCreateCommandQueue(context, device, 0, &err);
+   if (err < 0)
+   {
+      perror("Couldn't create a command queue");
+      exit(1);
+   };
+
+   // Create kernel
+   kernel = clCreateKernel(program, KERNEL_FUNC, &err);
+   if (err < 0)
+   {
+      perror("Couldn't create a kernel");
+      exit(1);
+   };
+
+   /* Create kernel arguments */
+   err = clSetKernelArg(kernel, 0, sizeof(cl_mem), &inputGridBuffer);
+   err |= clSetKernelArg(kernel, 1, sizeof(cl_mem), &outputGridBuffer);
+   err |= clSetKernelArg(kernel, 2, gridSize * sizeof(char), &gridDimensions);
+   if (err < 0)
+   {
+      perror("Couldn't create a kernel argument");
+      exit(1);
+   }
+
+   clReleaseKernel(kernel);
+   clReleaseMemObject(inputGridBuffer);
+   clReleaseMemObject(outputGridBuffer);
    clReleaseCommandQueue(queue);
    clReleaseProgram(program);
    clReleaseContext(context);
