@@ -1,4 +1,4 @@
-PROJ=oclgrind
+PROJ=a4
 
 CC=gcc
 
