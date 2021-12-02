@@ -1,4 +1,4 @@
-__kernel void oclgrind(__global float* grid, __global float* gridSize) {
+__kernel void oclgrind(__global char* grid, __global float* gridSize) {
 
    
 }
