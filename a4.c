@@ -208,13 +208,11 @@ void randomGridInit(char *grid)
 		// 50% chance
 		if (rand() / (RAND_MAX / 3) == 0)
 		{
-			// TODO: based on rank
 			grid[i] = 'X';
 		}
 	}
 }
 
-// TODO: figure out what happens if grid row length < 4
 void flipFlopGridInit(char *grid)
 {
 	int centerIndex = GRIDSIZE / 2;
@@ -223,7 +221,6 @@ void flipFlopGridInit(char *grid)
 	grid[centerIndex + 1] = 'X';
 }
 
-// TODO: figure out what happens if grid row length < 6
 void spiderGridInit(char *grid)
 {
 	int spiderLength = 6;
@@ -234,14 +231,12 @@ void spiderGridInit(char *grid)
 	}
 }
 
-// TODO: figure out what happens if grid row length < 5
 void gliderGridInit(char *grid)
 {
 	flipFlopGridInit(grid);
 	grid[GRIDSIZE / 2 + 2] = 'X';
 }
 
-// TODO: figure out what happens if grid row length < 7
 void faceGridInit(char *grid)
 {
 	spiderGridInit(grid);
