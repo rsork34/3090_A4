@@ -63,11 +63,12 @@ int main(int argc, char *argv[])
 	cl_kernel kernel;
 	cl_command_queue queue;
 	cl_int err, num_groups;
-	size_t local_size, global_size;
+	size_t local_size, global_size, num_kernels;
 	cl_mem gridBuffer, sizeBuffer;
 
 	char *grid = createGrid();
 	int gridSize = GRIDSIZE * GRIDSIZE + 1;
+	num_kernels = gridSize;
 
 	/* Create device and context */
 	device = create_device();
@@ -124,7 +125,7 @@ int main(int argc, char *argv[])
 	}
 
 	/* Enqueue kernel */
-   err = clEnqueueNDRangeKernel(queue, kernel, 1, NULL, &KERNELS, 
+   err = clEnqueueNDRangeKernel(queue, kernel, 1, NULL, &num_kernels, 
          &local_size, 0, NULL, NULL); 
    if(err < 0) {
       perror("Couldn't enqueue the kernel");
