@@ -33,6 +33,10 @@ void faceGridInit(char *grid);
 void displayGrid(char* grid);
 
 // Argument validation
+#define DEFAULT_ERR_MSG "Usage: oclgrind ./a4 <-n #> <-s #> <-i #>"
+#define KERNEL_ERR_MSG "Error: Number of Kernels must be a valid non-negative number greater than or equal to 1."
+#define GRIDSIZE_ERR_MSG "Error: Grid Size must be a valid non-negative number greater than or equal to 7."
+#define INITIALCONFIG_ERR_MSG "Error: Initial Configuration must be a valid non-negative number betwen 0 and 4 inclusive."
 void validateArguments(int numArgs, char **args);
 bool isValidArg(char *toCheck);
 
@@ -244,7 +248,7 @@ cl_program build_program(cl_context ctx, cl_device_id dev, const char *filename)
 void validateArguments(int numArgs, char **args) {
 	// number of arguments must be an odd number
 	if (numArgs > 1 && numArgs % 2 == 0) {
-		printf("Usage: oclgrind %s <-n #> <-s #> <-i #>\n", args[0]);
+		printf("%s\n", DEFAULT_ERR_MSG);
 		exit(1);
 	}
 
@@ -252,45 +256,45 @@ void validateArguments(int numArgs, char **args) {
 	for (int i = 1; i < numArgs; i = i + 2) {
 		if (strncmp(args[i], "-n", strlen(args[i])) == 0) {
 			if (!isValidArg(args[i+1])) {
-				printf("Error: Number of Kernels must be a valid non-negative number greater than or equal to 1.\n");
+				printf("%s\n", KERNEL_ERR_MSG);
 				exit(1);
 			}
 			else {
 				KERNELS = atoi(args[i+1]);
 				if (KERNELS < 1) {
-					printf("Error: Number of Kernels must be a valid non-negative number greater than or equal to 1.\n");
+					printf("%s\n", KERNEL_ERR_MSG);
 					exit(1);
 				}
 			}
 		}
 		else if (strncmp(args[i], "-s", strlen(args[i])) == 0) {
 			if (!isValidArg(args[i+1])) {
-				printf("Error: Grid Size must be a valid non-negative number greater than or equal to 7.\n");
+				printf("%s\n", GRIDSIZE_ERR_MSG);
 				exit(1);
 			}
 			else {
 				GRIDSIZE = atoi(args[i+1]);
 				if (GRIDSIZE < 7) {
-					printf("Error: Grid Size must be a valid non-negative number greater than or equal to 7.\n");
+					printf("%s\n", GRIDSIZE_ERR_MSG);
 					exit(1);
 				}
 			}
 		}
 		else if (strncmp(args[i], "-i", strlen(args[i])) == 0) {
 			if (!isValidArg(args[i+1])) {
-				printf("Error: Initial Configuration must be a valid non-negative number betwen 0 and 4 inclusive.\n");
+				printf("%s\n", INITIALCONFIG_ERR_MSG);
 				exit(1);
 			}
 			else {
 				INITIALCONFIG = atoi(args[i+1]);
 				if (INITIALCONFIG > 4) {
-					printf("Error: Initial Configuration must be a valid non-negative number betwen 0 and 4 inclusive.\n");
+					printf("%s\n", INITIALCONFIG_ERR_MSG);
 					exit(1);
 				}
 			}
 		}
 		else {
-			printf("Usage: oclgrind %s <-n #> <-s #> <-i #>\n", args[0]);
+			printf("%s\n", DEFAULT_ERR_MSG);
 			exit(1);
 		}
 	}
