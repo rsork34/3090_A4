@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
 
 	// TODO: FIGURE THIS OUT
 	global_size = 8;
-	local_size = 4;
+	local_size = KERNELS;
 	num_groups = global_size / local_size;
 
 	gridBuffer = clCreateBuffer(context, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, gridSize * sizeof(char), grid, &err);
@@ -122,6 +122,22 @@ int main(int argc, char *argv[])
 		perror("Couldn't create a kernel argument");
 		exit(1);
 	}
+
+	/* Enqueue kernel */
+   err = clEnqueueNDRangeKernel(queue, kernel, 1, NULL, &KERNELS, 
+         &local_size, 0, NULL, NULL); 
+   if(err < 0) {
+      perror("Couldn't enqueue the kernel");
+      exit(1);
+   }
+
+	 /* Read the kernel's output */
+   err = clEnqueueReadBuffer(queue, gridBuffer, CL_TRUE, 0, 
+         sizeof(char) * gridSize, grid, 0, NULL, NULL);
+   if(err < 0) {
+      perror("Couldn't read the buffer");
+      exit(1);
+   }
 
 	clReleaseKernel(kernel);
 	clReleaseMemObject(gridBuffer);
