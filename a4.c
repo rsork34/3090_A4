@@ -125,20 +125,24 @@ int main(int argc, char *argv[])
 	}
 
 	/* Enqueue kernel */
-   err = clEnqueueNDRangeKernel(queue, kernel, 1, NULL, &num_kernels, 
-         &local_size, 0, NULL, NULL); 
-   if(err < 0) {
-      perror("Couldn't enqueue the kernel");
-      exit(1);
-   }
+	err = clEnqueueNDRangeKernel(queue, kernel, 1, NULL, &num_kernels,
+															 &local_size, 0, NULL, NULL);
+	if (err < 0)
+	{
+		perror("Couldn't enqueue the kernel");
+		exit(1);
+	}
 
-	 /* Read the kernel's output */
-   err = clEnqueueReadBuffer(queue, gridBuffer, CL_TRUE, 0, 
-         sizeof(char) * gridSize, grid, 0, NULL, NULL);
-   if(err < 0) {
-      perror("Couldn't read the buffer");
-      exit(1);
-   }
+	/* Read the kernel's output */
+	err = clEnqueueReadBuffer(queue, gridBuffer, CL_TRUE, 0,
+														sizeof(char) * gridSize, grid, 0, NULL, NULL);
+	if (err < 0)
+	{
+		perror("Couldn't read the buffer");
+		exit(1);
+	}
+
+	displayGrid(grid);
 
 	clReleaseKernel(kernel);
 	clReleaseMemObject(gridBuffer);
