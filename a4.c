@@ -252,26 +252,26 @@ void validateArguments(int numArgs, char **args) {
 	for (int i = 1; i < numArgs; i = i + 2) {
 		if (strncmp(args[i], "-n", strlen(args[i])) == 0) {
 			if (!isValidArg(args[i+1])) {
-				printf("Error: Number of Kernels must be a valid non-negative number greater than 1.\n");
+				printf("Error: Number of Kernels must be a valid non-negative number greater than or equal to 1.\n");
 				exit(1);
 			}
 			else {
 				KERNELS = atoi(args[i+1]);
 				if (KERNELS < 1) {
-					printf("Error: Number of Kernels must be a valid non-negative number greater than 1.\n");
+					printf("Error: Number of Kernels must be a valid non-negative number greater than or equal to 1.\n");
 					exit(1);
 				}
 			}
 		}
 		else if (strncmp(args[i], "-s", strlen(args[i])) == 0) {
 			if (!isValidArg(args[i+1])) {
-				printf("Error: Grid Size must be a valid non-negative number greater than 0.\n");
+				printf("Error: Grid Size must be a valid non-negative number greater than or equal to 7.\n");
 				exit(1);
 			}
 			else {
 				GRIDSIZE = atoi(args[i+1]);
 				if (GRIDSIZE == 0) {
-					printf("Error: Grid Size must be a valid non-negative number greater than 0.\n");
+					printf("Error: Grid Size must be a valid non-negative number greater than or equal to 7.\n");
 					exit(1);
 				}
 			}
