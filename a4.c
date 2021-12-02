@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
    cl_command_queue queue;
    cl_int err, num_groups;
    size_t local_size, global_size;
-   cl_mem gridBuffer;
+   cl_mem gridBuffer, sizeBuffer;
 
    char *grid = createGrid();
    int gridSize = GRIDSIZE * GRIDSIZE + 1;
@@ -91,6 +91,12 @@ int main(int argc, char *argv[])
       perror("Couldn't create a buffer");
       exit(1);
    };
+	 sizeBuffer = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(gridSize), &gridSize, &err);
+   if (err < 0)
+   {
+      perror("Couldn't create a buffer");
+      exit(1);
+   };
 
    // Create command queue
    queue = clCreateCommandQueue(context, device, 0, &err);
@@ -110,7 +116,7 @@ int main(int argc, char *argv[])
 
    /* Create kernel arguments */
    err = clSetKernelArg(kernel, 0, sizeof(cl_mem), &gridBuffer);
-   err |= clSetKernelArg(kernel, 1, gridSize * sizeof(char), &GRIDSIZE);
+   err |= clSetKernelArg(kernel, 1, sizeof(cl_mem), &sizeBuffer);
    if (err < 0)
    {
       perror("Couldn't create a kernel argument");
@@ -119,6 +125,7 @@ int main(int argc, char *argv[])
 
    clReleaseKernel(kernel);
    clReleaseMemObject(gridBuffer);
+	 clReleaseMemObject(sizeBuffer);
    clReleaseCommandQueue(queue);
    clReleaseProgram(program);
    clReleaseContext(context);
