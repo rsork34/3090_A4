@@ -270,7 +270,7 @@ void validateArguments(int numArgs, char **args) {
 			}
 			else {
 				GRIDSIZE = atoi(args[i+1]);
-				if (GRIDSIZE == 0) {
+				if (GRIDSIZE < 7) {
 					printf("Error: Grid Size must be a valid non-negative number greater than or equal to 7.\n");
 					exit(1);
 				}
