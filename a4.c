@@ -33,10 +33,6 @@ void faceGridInit(char *grid);
 void displayGrid(char* grid);
 
 // Argument validation
-#define DEFAULT_ERR_MSG "Usage: oclgrind ./a4 <-n #> <-s #> <-i #>"
-#define KERNEL_ERR_MSG "Error: Number of Kernels must be a valid non-negative number greater than or equal to 1."
-#define GRIDSIZE_ERR_MSG "Error: Grid Size must be a valid non-negative number greater than or equal to 7."
-#define INITIALCONFIG_ERR_MSG "Error: Initial Configuration must be a valid non-negative number betwen 0 and 4 inclusive."
 void validateArguments(int numArgs, char **args);
 bool isValidArg(char *toCheck);
 
@@ -44,6 +40,10 @@ bool isValidArg(char *toCheck);
 int KERNELS = 1;
 int GRIDSIZE = 20;
 int INITIALCONFIG = 0;
+#define DEFAULT_ERR_MSG "Usage: oclgrind ./a4 <-n #> <-s #> <-i #>"
+#define KERNEL_ERR_MSG "Error: Number of Kernels must be a valid non-negative number greater than or equal to 1."
+#define GRIDSIZE_ERR_MSG "Error: Grid Size must be a valid non-negative number greater than or equal to 7."
+#define INITIALCONFIG_ERR_MSG "Error: Initial Configuration must be a valid non-negative number betwen 0 and 4 inclusive."
 
 #endif
 
