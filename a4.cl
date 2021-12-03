@@ -14,7 +14,7 @@ __kernel void oclgrind(__global char *grid, __global int *gridSize, __global int
     startIndex += offset;
   }
 
-  // serial version gets ID of 1 kernal
+  // Gets kernel rank, if more than 10 kernels set to 'X'
   char rank = (kernelCount < 10) ? (get_global_id(0) + '0') : 'X';
 
   int totalCells = (rowLength) * (rowLength);
@@ -31,6 +31,7 @@ __kernel void oclgrind(__global char *grid, __global int *gridSize, __global int
     int curColIndex = i % rowLength;
 
     // TODO: don't continue, but have index skip to next row
+      // i += ???
     // Ensure kernel only works on its own columns
     if (curColIndex < startIndex || curColIndex >= endIndex) {
       continue;
