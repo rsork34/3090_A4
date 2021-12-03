@@ -55,12 +55,11 @@ int main(int argc, char *argv[])
 	cl_device_id device;
 	cl_context context;
 	cl_program program;
-	cl_kernel kernel;
 	cl_kernel kernel_arr[KERNELS];
 	cl_command_queue queue;
-	cl_int err, num_groups;
-	size_t local_size, global_size, num_kernels;
-	cl_mem gridBuffer, sizeBuffer;
+	cl_int err;
+	size_t num_kernels;
+	cl_mem gridBuffer, sizeBuffer, numKernelsBuffer;
 
 	char *grid = createGrid();
 	int gridSize = GRIDSIZE * GRIDSIZE + 1;
@@ -76,11 +75,6 @@ int main(int argc, char *argv[])
 	}
 	/* Build program */
 	program = build_program(context, device, PROGRAM_FILE);
-
-	// TODO: FIGURE THIS OUT
-	global_size = KERNELS;
-	local_size = KERNELS;
-	num_groups = 1;
 
 	gridBuffer = clCreateBuffer(context, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, gridSize * sizeof(char), grid, &err);
 	if (err < 0)
