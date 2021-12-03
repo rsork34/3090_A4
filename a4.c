@@ -109,7 +109,6 @@ int main(int argc, char *argv[])
 		kernel_arr[i] = clCreateKernel(program, KERNEL_FUNC, &err);
 		if (err < 0)
 		{
-			printf("Err: %d\n", err);
 			perror("Couldn't create a kernel");
 			exit(1);
 		};
