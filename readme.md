@@ -5,6 +5,7 @@ Group Members:
  - Hima Patel - 1045879 - hima@uoguelph.ca
 
 ## How to Run:
+Run `make`
 $ oclgrind ./a4 <-n #> <-s #> <-i #>
 
 **Parameter Requirements**:
