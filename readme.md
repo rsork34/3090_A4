@@ -15,3 +15,4 @@ $ oclgrind ./a4 <-n #> <-s #> <-i #>
 
 ## Note:
  * opencl scaffolding code was taken from in class code examples
+ * Makefile code was taken from in class code examples
