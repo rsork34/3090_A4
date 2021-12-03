@@ -4,13 +4,12 @@ __kernel void oclgrind(__global char *grid, __global int *gridSize, __global int
   int rowLength;
   int totalCells;
   int curColIndex;
-
-  // Calculate columns for kernel to work on
   int startIndex;
   int endIndex;
   int kernelCount;
   int cellsPerKernel;
 
+  // Calculate columns for kernel to work on
   kernelCount = *numKernels;
   cellsPerKernel = (*gridSize) / kernelCount;
   startIndex = get_global_id(0) * cellsPerKernel;
@@ -33,11 +32,9 @@ __kernel void oclgrind(__global char *grid, __global int *gridSize, __global int
 
     // Index in row, not in total grid
     curColIndex = i % rowLength;
-    if (curColIndex < startIndex || curColIndex >= endIndex) {
-      continue;
-    }
+
+    // TODO: don't continue, but have index skip to next row
     // Ensure kernel only works on its own columns
-    // TODO: don't continue, but have i skip to next row
     if (curColIndex < startIndex || curColIndex >= endIndex) {
       continue;
     }
