@@ -41,6 +41,7 @@ bool isValidArg(char *toCheck);
 #define GRIDSIZE_ERR_MSG "Error: Grid Size must be a valid non-negative number greater than or equal to 7."
 #define MAX_KERNEL_SIZE_ERR_MSG "Error: Number of Kernels cannot be greater than Grid Size."
 #define INITIALCONFIG_ERR_MSG "Error: Initial Configuration must be a valid non-negative number betwen 0 and 4 inclusive."
+#define PLACEHOLDER_CHAR 'Y'
 
 #endif
 
@@ -53,23 +54,18 @@ int main(int argc, char *argv[])
 {
 	validateArguments(argc, argv);
 
-	// print statements below TO BE REMOVED
-	printf("KERNELS %d\n", KERNELS);
-	printf("GRIDSIZE %d\n", GRIDSIZE);
-	printf("INITIALCONFIG %d\n", INITIALCONFIG);
-
 	cl_device_id device;
 	cl_context context;
 	cl_program program;
-	cl_kernel kernel;
+	cl_kernel kernel_arr[KERNELS];
 	cl_command_queue queue;
-	cl_int err, num_groups;
-	size_t local_size, global_size, num_kernels;
-	cl_mem gridBuffer, sizeBuffer;
+	cl_int err;
+	size_t num_kernels;
+	cl_mem gridBuffer, sizeBuffer, numKernelsBuffer;
 
 	char *grid = createGrid();
 	int gridSize = GRIDSIZE * GRIDSIZE + 1;
-	num_kernels = gridSize;
+	num_kernels = KERNELS;
 
 	/* Create device and context */
 	device = create_device();
@@ -82,11 +78,6 @@ int main(int argc, char *argv[])
 	/* Build program */
 	program = build_program(context, device, PROGRAM_FILE);
 
-	// TODO: FIGURE THIS OUT
-	global_size = 8;
-	local_size = KERNELS;
-	num_groups = global_size / local_size;
-
 	gridBuffer = clCreateBuffer(context, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, gridSize * sizeof(char), grid, &err);
 	if (err < 0)
 	{
@@ -94,6 +85,12 @@ int main(int argc, char *argv[])
 		exit(1);
 	};
 	sizeBuffer = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(GRIDSIZE), &GRIDSIZE, &err);
+	if (err < 0)
+	{
+		perror("Couldn't create a buffer");
+		exit(1);
+	};
+	numKernelsBuffer = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(KERNELS), &KERNELS, &err);
 	if (err < 0)
 	{
 		perror("Couldn't create a buffer");
@@ -108,46 +105,54 @@ int main(int argc, char *argv[])
 		exit(1);
 	};
 
-	// Create kernel
-	kernel = clCreateKernel(program, KERNEL_FUNC, &err);
-	if (err < 0)
+	for (int i = 0; i < KERNELS; i++)
 	{
-		perror("Couldn't create a kernel");
-		exit(1);
-	};
+		kernel_arr[i] = clCreateKernel(program, KERNEL_FUNC, &err);
+		if (err < 0)
+		{
+			perror("Couldn't create a kernel");
+			exit(1);
+		};
 
-	/* Create kernel arguments */
-	err = clSetKernelArg(kernel, 0, sizeof(cl_mem), &gridBuffer);
-	err |= clSetKernelArg(kernel, 1, sizeof(cl_mem), &sizeBuffer);
-	if (err < 0)
-	{
-		perror("Couldn't create a kernel argument");
-		exit(1);
-	}
+		/* Create kernel arguments */
+		err = clSetKernelArg(kernel_arr[i], 0, sizeof(cl_mem), &gridBuffer);
+		err |= clSetKernelArg(kernel_arr[i], 1, sizeof(cl_mem), &sizeBuffer);
+		err |= clSetKernelArg(kernel_arr[i], 2, sizeof(cl_mem), &numKernelsBuffer);
+		if (err < 0)
+		{
+			perror("Couldn't create a kernel argument");
+			exit(1);
+		}
 
-	/* Enqueue kernel */
-	err = clEnqueueNDRangeKernel(queue, kernel, 1, NULL, &num_kernels,
-															 &local_size, 0, NULL, NULL);
-	if (err < 0)
-	{
-		perror("Couldn't enqueue the kernel");
-		exit(1);
-	}
+		/* Enqueue kernel */
+		err = clEnqueueNDRangeKernel(queue, kernel_arr[i], 1, NULL, &num_kernels,
+																 &num_kernels, 0, NULL, NULL);
+		if (err < 0)
+		{
+			perror("Couldn't enqueue the kernel");
+			exit(1);
+		}
 
-	/* Read the kernel's output */
-	err = clEnqueueReadBuffer(queue, gridBuffer, CL_TRUE, 0,
-														sizeof(char) * gridSize, grid, 0, NULL, NULL);
-	if (err < 0)
-	{
-		perror("Couldn't read the buffer");
-		exit(1);
+		/* Read the kernel's output */
+		err = clEnqueueReadBuffer(queue, gridBuffer, CL_TRUE, 0,
+															sizeof(char) * gridSize, grid, 0, NULL, NULL);
+		if (err < 0)
+		{
+			perror("Couldn't read the buffer");
+			exit(1);
+		}
 	}
 
 	displayGrid(grid);
-
-	clReleaseKernel(kernel);
+	free(grid);
+	for (int i = 0; i < KERNELS; i++)
+	{
+		clReleaseKernel(kernel_arr[i]);
+	}
+	
 	clReleaseMemObject(gridBuffer);
 	clReleaseMemObject(sizeBuffer);
+	clReleaseMemObject(numKernelsBuffer);
 	clReleaseCommandQueue(queue);
 	clReleaseProgram(program);
 	clReleaseContext(context);
@@ -230,7 +235,7 @@ void randomGridInit(char *grid)
 		// 50% chance
 		if (rand() / (RAND_MAX / 3) == 0)
 		{
-			grid[i] = 'X';
+			grid[i] = PLACEHOLDER_CHAR;
 		}
 	}
 }
@@ -238,9 +243,9 @@ void randomGridInit(char *grid)
 void flipFlopGridInit(char *grid)
 {
 	int centerIndex = GRIDSIZE / 2;
-	grid[centerIndex - 2] = 'X';
-	grid[centerIndex] = 'X';
-	grid[centerIndex + 1] = 'X';
+	grid[centerIndex - 2] = PLACEHOLDER_CHAR;
+	grid[centerIndex] = PLACEHOLDER_CHAR;
+	grid[centerIndex + 1] = PLACEHOLDER_CHAR;
 }
 
 void spiderGridInit(char *grid)
@@ -249,20 +254,20 @@ void spiderGridInit(char *grid)
 	int startIndex = (GRIDSIZE / 2) - 3;
 	for (int i = startIndex; i < startIndex + spiderLength; i++)
 	{
-		grid[i] = 'X';
+		grid[i] = PLACEHOLDER_CHAR;
 	}
 }
 
 void gliderGridInit(char *grid)
 {
 	flipFlopGridInit(grid);
-	grid[GRIDSIZE / 2 + 2] = 'X';
+	grid[GRIDSIZE / 2 + 2] = PLACEHOLDER_CHAR;
 }
 
 void faceGridInit(char *grid)
 {
 	spiderGridInit(grid);
-	grid[GRIDSIZE / 2 + 3] = 'X';
+	grid[GRIDSIZE / 2 + 3] = PLACEHOLDER_CHAR;
 }
 
 cl_program build_program(cl_context ctx, cl_device_id dev, const char *filename)

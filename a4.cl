@@ -1,20 +1,38 @@
-__kernel void oclgrind(__global char *grid, __global int *gridSize) {
-  int i;
-  int liveNeighbours;
-  int rowLength;
-  int totalCells;
-  int curColIndex;
-  
-  // serial version gets ID of 1 kernal
-  char rank = get_global_id(1) + '0';
+__kernel void oclgrind(__global char *grid, __global int *gridSize, __global int *numKernels) {
+  // Read in args
+  int kernelCount = *numKernels; 
+  int rowLength = *gridSize;
 
-  totalCells = (*gridSize) * (*gridSize);
-  rowLength = *gridSize;
+  // Calculate columns for kernel to work on
+  int offset = rowLength % kernelCount;
+  int cellsPerKernel = rowLength / kernelCount;
+  int startIndex = (get_global_id(0) * cellsPerKernel);
+  int endIndex = startIndex + cellsPerKernel + offset;
 
-  for (i = 0; i < totalCells; i++) {
+  // Columns don't evenly divide - give extra to rank 0
+  if (offset > 0 && get_global_id(0) != 0) {
+    startIndex += offset;
+  }
+
+  // Gets kernel rank, if more than 10 kernels set to 'X'
+  char rank = (kernelCount < 10) ? (get_global_id(0) + '0') : 'X';
+
+  int totalCells = (rowLength) * (rowLength);
+  for (int i = 0; i < totalCells; i++) {
+    // Barrier - when parallel
+    barrier(CLK_LOCAL_MEM_FENCE);
+
     // Check if on last row - no more writes required
     if (i + rowLength > totalCells) {
       break;
+    }
+
+    // Index in row, not in total grid
+    int curColIndex = i % rowLength;
+
+    // Ensure kernel only works on its own columns
+    if (curColIndex < startIndex || curColIndex >= endIndex) {
+      continue;
     }
 
     // If first row overwrite placeholder with rank
@@ -22,11 +40,8 @@ __kernel void oclgrind(__global char *grid, __global int *gridSize) {
       grid[i] = rank;
     }
     
-    // Index in row, not in total grid
-    curColIndex = i % rowLength;
-    
     // Counter for living neighbors
-    liveNeighbours = 0;
+    int liveNeighbours = 0;
     
     // check if cell is on left edge
     if ((curColIndex - 1) < 0) {
@@ -90,18 +105,15 @@ __kernel void oclgrind(__global char *grid, __global int *gridSize) {
     if (grid[i] == '.') {
       // Cell is alive for next iteration
       if (liveNeighbours == 2 || liveNeighbours == 3) {
-        // TODO: REPLACE WITH RANK
         grid[i + rowLength] = rank;
       }
     }
     // Current cell is alive
     else {
+      // Cell is alive for next iteration
       if (liveNeighbours == 2 || liveNeighbours == 4) {
-        // TODO: REPLACE WITH RANK
         grid[i + rowLength] = rank;
       }
     }
-
-    // Barrier - when parallel
   }
 }
