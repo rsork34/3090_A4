@@ -30,8 +30,6 @@ __kernel void oclgrind(__global char *grid, __global int *gridSize, __global int
     // Index in row, not in total grid
     int curColIndex = i % rowLength;
 
-    // TODO: don't continue, but have index skip to next row
-      // i += ???
     // Ensure kernel only works on its own columns
     if (curColIndex < startIndex || curColIndex >= endIndex) {
       continue;
