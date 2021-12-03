@@ -4,20 +4,19 @@ __kernel void oclgrind(__global char *grid, __global int *gridSize) {
   int rowLength;
   int totalCells;
   int curColIndex;
+  // TODO: Get kernel ID
   char rank = '0';
 
   totalCells = (*gridSize) * (*gridSize);
   rowLength = *gridSize;
 
-  // TODO: Get kernel ID
-
   for (i = 0; i < totalCells; i++) {
-    // Check if on last row
+    // Check if on last row - no more writes required
     if (i + rowLength > totalCells) {
       break;
     }
 
-    // If first row overwrite 'X' placeholder with rank
+    // If first row overwrite placeholder with rank
     if (i < rowLength && grid[i] != '.') {
       grid[i] = rank;
     }
