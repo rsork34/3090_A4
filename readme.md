@@ -1,8 +1,8 @@
 # CIS*3090 ASSIGNMENT 4
 Group Members:
  - Ryan Sorkin - 1012611 
- - Jonah Ruch - **STUDENT ID**
- - Hima Patel - **STUDENT ID**
+ - Jonah Ruch - 0853055 - ruchj@uoguelph.ca
+ - Hima Patel - 1045879 - hima@uoguelph.ca
 
 ## How to Run:
 $ oclgrind ./a4 <-n #> <-s #> <-i #>
