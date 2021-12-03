@@ -4,26 +4,48 @@ __kernel void oclgrind(__global char *grid, __global int *gridSize, __global int
   int rowLength;
   int totalCells;
   int curColIndex;
-  
+
+  // Calculate columns for kernel to work on
+  int startIndex;
+  int endIndex;
+  int kernelCount;
+  int cellsPerKernel;
+
+  kernelCount = *numKernels;
+  cellsPerKernel = (*gridSize) / kernelCount;
+  startIndex = get_global_id(0) * cellsPerKernel;
+  endIndex = startIndex + cellsPerKernel;
+
   // serial version gets ID of 1 kernal
-  char rank = get_global_id(1) + '0';
+  char rank = get_global_id(0) + '0';
 
   totalCells = (*gridSize) * (*gridSize);
   rowLength = *gridSize;
 
   for (i = 0; i < totalCells; i++) {
+    // Barrier - when parallel
+    barrier(CLK_LOCAL_MEM_FENCE);
+
     // Check if on last row - no more writes required
     if (i + rowLength > totalCells) {
       break;
+    }
+
+    // Index in row, not in total grid
+    curColIndex = i % rowLength;
+    if (curColIndex < startIndex || curColIndex >= endIndex) {
+      continue;
+    }
+    // Ensure kernel only works on its own columns
+    // TODO: don't continue, but have i skip to next row
+    if (curColIndex < startIndex || curColIndex >= endIndex) {
+      continue;
     }
 
     // If first row overwrite placeholder with rank
     if (i < rowLength && grid[i] != '.') {
       grid[i] = rank;
     }
-    
-    // Index in row, not in total grid
-    curColIndex = i % rowLength;
     
     // Counter for living neighbors
     liveNeighbours = 0;
@@ -99,8 +121,5 @@ __kernel void oclgrind(__global char *grid, __global int *gridSize, __global int
         grid[i + rowLength] = rank;
       }
     }
-
-    // Barrier - when parallel
-    barrier(CLK_LOCAL_MEM_FENCE);
   }
 }
