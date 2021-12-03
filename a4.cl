@@ -1,17 +1,23 @@
 __kernel void oclgrind(__global char *grid, __global int *gridSize, __global int *numKernels) {
-  // Calculate columns for kernel to work on
-  // TODO: logic if gridsize / kernelCount is not evenly divisible
+  // Read in args
   int kernelCount = *numKernels; 
-  int cellsPerKernel = (*gridSize) / kernelCount;
-  int startIndex = get_global_id(0) * cellsPerKernel;
+  int rowLength = *gridSize;
+
+  // Calculate columns for kernel to work on
+  int offset = (rowLength) % kernelCount;
+  int cellsPerKernel = (rowLength) / kernelCount;
+  int startIndex = (get_global_id(0) * cellsPerKernel) + offset;
   int endIndex = startIndex + cellsPerKernel;
+  
+  // Columns don't evenly divide - give extra to rank 0
+  if (get_global_id(0) == 0 && offset > 0) {
+    startIndex += offset;
+  }
 
   // serial version gets ID of 1 kernal
   char rank = (kernelCount < 10) ? (get_global_id(0) + '0') : 'X';
 
-  int totalCells = (*gridSize) * (*gridSize);
-  int rowLength = *gridSize;
-
+  int totalCells = (rowLength) * (rowLength);
   for (int i = 0; i < totalCells; i++) {
     // Barrier - when parallel
     barrier(CLK_LOCAL_MEM_FENCE);
