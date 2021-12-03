@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
 		perror("Couldn't create a buffer");
 		exit(1);
 	};
-	sizeBuffer = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(gridSize), &gridSize, &err);
+	sizeBuffer = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(GRIDSIZE), &GRIDSIZE, &err);
 	if (err < 0)
 	{
 		perror("Couldn't create a buffer");

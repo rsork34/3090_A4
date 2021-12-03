@@ -1,28 +1,106 @@
-__kernel void countNeighbors(__local int* index, __global char * grid, __local int * count) {
-  *count = 1;
-}
-
 __kernel void oclgrind(__global char *grid, __global int *gridSize) {
-  __local int i;
-  __local int count;
+  int i;
+  int liveNeighbours;
+  int rowLength;
+  int totalCells;
+  int curColIndex;
+  
+  // serial version gets ID of 1 kernal
+  char rank = get_global_id(1) + '0';
 
-  // TODO: Get kernel ID
-  __local char KERNEL_ID_CHAR = '0';
+  totalCells = (*gridSize) * (*gridSize);
+  rowLength = *gridSize;
 
-  for (i = 0; i < *gridSize; i++) {
-    count = 0;
-    countNeighbors(&i, grid, &count);
-    if (count == 1)
-    {
-      grid[i] = KERNEL_ID_CHAR;
+  for (i = 0; i < totalCells; i++) {
+    // Check if on last row - no more writes required
+    if (i + rowLength > totalCells) {
+      break;
     }
-    // Calculate num living neighbors
 
-    // If next iteration is alive {}
-      // Write to next row same column
+    // If first row overwrite placeholder with rank
+    if (i < rowLength && grid[i] != '.') {
+      grid[i] = rank;
+    }
+    
+    // Index in row, not in total grid
+    curColIndex = i % rowLength;
+    
+    // Counter for living neighbors
+    liveNeighbours = 0;
+    
+    // check if cell is on left edge
+    if ((curColIndex - 1) < 0) {
+      if (grid[i + 1] != '.') { // check right neighbour
+        liveNeighbours++;
+      }
+      if (grid[i + 2] != '.') { // check right neighbour's right neighbour
+        liveNeighbours++;
+      }
+    }
+    // check if cell is 1 space from left edge
+    else if ((curColIndex - 1) == 0) {
+      if (grid[i - 1] != '.') { // check left neighbour
+        liveNeighbours++;
+      }
+      if (grid[i + 1] != '.') { // check right neighbour
+        liveNeighbours++;
+      }
+      if (grid[i + 2] != '.') { // check right neighbour's right neighbour
+        liveNeighbours++;
+      }
+    }
+    // check if cell is 1 space from right edge
+    else if ((curColIndex + 1) == (rowLength - 1)) {
+      if (grid[i + 1] != '.') { // check right neighbour
+        liveNeighbours++;
+      }
+      if (grid[i - 1] != '.') { // check left neighbour
+        liveNeighbours++;
+      }
+      if (grid[i - 2] != '.') { // check left neighbour's left neighbour
+        liveNeighbours++;
+      }
+    }
+    // check if cell is on right edge
+    else if ((curColIndex + 1) > (rowLength - 1)) {
+      if (grid[i - 1] != '.') { // check left neighbour
+        liveNeighbours++;
+      }
+      if (grid[i - 2] != '.') { // check left neighbour's left neighbour
+        liveNeighbours++;
+      }
+    }
+    // check if cell is in the middle of the grid
+    else {
+      if (grid[i - 1] != '.') { // check left neighbour
+        liveNeighbours++;
+      }
+      if (grid[i - 2] != '.') { // check left neighbour's left neighbour
+        liveNeighbours++;
+      }
+      if (grid[i + 1] != '.') { // check right neighbour
+        liveNeighbours++;
+      }
+      if (grid[i + 2] != '.') { // check right neighbour's right neighbour
+        liveNeighbours++;
+      }
+    }
 
-    // If next iteration is dead {}
-      // Write to next row same column
+    // Current cell is dead
+    if (grid[i] == '.') {
+      // Cell is alive for next iteration
+      if (liveNeighbours == 2 || liveNeighbours == 3) {
+        // TODO: REPLACE WITH RANK
+        grid[i + rowLength] = rank;
+      }
+    }
+    // Current cell is alive
+    else {
+      if (liveNeighbours == 2 || liveNeighbours == 4) {
+        // TODO: REPLACE WITH RANK
+        grid[i + rowLength] = rank;
+      }
+    }
 
     // Barrier - when parallel
   }
