@@ -18,6 +18,9 @@ __kernel void oclgrind(__global char *grid, __global int *gridSize, __global int
 
   // serial version gets ID of 1 kernal
   char rank = get_global_id(0) + '0';
+  if (kernelCount >= 10) {
+    rank = 'X';
+  }
 
   totalCells = (*gridSize) * (*gridSize);
   rowLength = *gridSize;
