@@ -88,6 +88,12 @@ int main(int argc, char *argv[])
 		perror("Couldn't create a buffer");
 		exit(1);
 	};
+	numKernelsBuffer = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(KERNELS), &KERNELS, &err);
+	if (err < 0)
+	{
+		perror("Couldn't create a buffer");
+		exit(1);
+	};
 
 	// Create command queue
 	queue = clCreateCommandQueue(context, device, 0, &err);
@@ -110,6 +116,7 @@ int main(int argc, char *argv[])
 		/* Create kernel arguments */
 		err = clSetKernelArg(kernel_arr[i], 0, sizeof(cl_mem), &gridBuffer);
 		err |= clSetKernelArg(kernel_arr[i], 1, sizeof(cl_mem), &sizeBuffer);
+		err |= clSetKernelArg(kernel_arr[i], 2, sizeof(cl_mem), &numKernelsBuffer);
 		if (err < 0)
 		{
 			perror("Couldn't create a kernel argument");

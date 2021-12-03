@@ -1,4 +1,4 @@
-__kernel void oclgrind(__global char *grid, __global int *gridSize) {
+__kernel void oclgrind(__global char *grid, __global int *gridSize, __global int *numKernels) {
   int i;
   int liveNeighbours;
   int rowLength;
