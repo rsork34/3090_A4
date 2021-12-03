@@ -1,20 +1,10 @@
 __kernel void oclgrind(__global char *grid, __global int *gridSize, __global int *numKernels) {
-  int i;
-  int liveNeighbours;
-  int rowLength;
-  int totalCells;
-  int curColIndex;
-  int startIndex;
-  int endIndex;
-  int kernelCount;
-  int cellsPerKernel;
-
   // Calculate columns for kernel to work on
   // TODO: logic if gridsize / kernelCount is not evenly divisible
-  kernelCount = *numKernels;
-  cellsPerKernel = (*gridSize) / kernelCount;
-  startIndex = get_global_id(0) * cellsPerKernel;
-  endIndex = startIndex + cellsPerKernel;
+  int kernelCount = *numKernels; 
+  int cellsPerKernel = (*gridSize) / kernelCount;
+  int startIndex = get_global_id(0) * cellsPerKernel;
+  int endIndex = startIndex + cellsPerKernel;
 
   // serial version gets ID of 1 kernal
   char rank = get_global_id(0) + '0';
@@ -22,10 +12,10 @@ __kernel void oclgrind(__global char *grid, __global int *gridSize, __global int
     rank = 'X';
   }
 
-  totalCells = (*gridSize) * (*gridSize);
-  rowLength = *gridSize;
+  int totalCells = (*gridSize) * (*gridSize);
+  int rowLength = *gridSize;
 
-  for (i = 0; i < totalCells; i++) {
+  for (int i = 0; i < totalCells; i++) {
     // Barrier - when parallel
     barrier(CLK_LOCAL_MEM_FENCE);
 
@@ -35,7 +25,7 @@ __kernel void oclgrind(__global char *grid, __global int *gridSize, __global int
     }
 
     // Index in row, not in total grid
-    curColIndex = i % rowLength;
+    int curColIndex = i % rowLength;
 
     // TODO: don't continue, but have index skip to next row
     // Ensure kernel only works on its own columns
@@ -49,7 +39,7 @@ __kernel void oclgrind(__global char *grid, __global int *gridSize, __global int
     }
     
     // Counter for living neighbors
-    liveNeighbours = 0;
+    int liveNeighbours = 0;
     
     // check if cell is on left edge
     if ((curColIndex - 1) < 0) {
