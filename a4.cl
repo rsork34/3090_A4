@@ -4,13 +4,13 @@ __kernel void oclgrind(__global char *grid, __global int *gridSize, __global int
   int rowLength = *gridSize;
 
   // Calculate columns for kernel to work on
-  int offset = (rowLength) % kernelCount;
-  int cellsPerKernel = (rowLength) / kernelCount;
-  int startIndex = (get_global_id(0) * cellsPerKernel) + offset;
-  int endIndex = startIndex + cellsPerKernel;
-  
+  int offset = rowLength % kernelCount;
+  int cellsPerKernel = rowLength / kernelCount;
+  int startIndex = (get_global_id(0) * cellsPerKernel);
+  int endIndex = startIndex + cellsPerKernel + offset;
+
   // Columns don't evenly divide - give extra to rank 0
-  if (get_global_id(0) == 0 && offset > 0) {
+  if (offset > 0 && get_global_id(0) != 0) {
     startIndex += offset;
   }
 
@@ -111,6 +111,7 @@ __kernel void oclgrind(__global char *grid, __global int *gridSize, __global int
     }
     // Current cell is alive
     else {
+      // Cell is alive for next iteration
       if (liveNeighbours == 2 || liveNeighbours == 4) {
         grid[i + rowLength] = rank;
       }
