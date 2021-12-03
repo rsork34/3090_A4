@@ -48,7 +48,7 @@ bool isValidArg(char *toCheck);
 // Global variables initilized with DEFAULT values
 int KERNELS = 1;
 int GRIDSIZE = 20;
-int INITIALCONFIG = 1;
+int INITIALCONFIG = 0;
 
 int main(int argc, char *argv[])
 {
