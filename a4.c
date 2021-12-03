@@ -39,6 +39,7 @@ bool isValidArg(char *toCheck);
 #define DEFAULT_ERR_MSG "Usage: oclgrind ./a4 <-n #> <-s #> <-i #>"
 #define KERNEL_ERR_MSG "Error: Number of Kernels must be a valid non-negative number greater than or equal to 1."
 #define GRIDSIZE_ERR_MSG "Error: Grid Size must be a valid non-negative number greater than or equal to 7."
+#define MAX_KERNEL_SIZE_ERR_MSG "Error: Number of Kernels cannot be greater than Grid Size."
 #define INITIALCONFIG_ERR_MSG "Error: Initial Configuration must be a valid non-negative number betwen 0 and 4 inclusive."
 #define PLACEHOLDER_CHAR 'Y'
 
@@ -365,6 +366,11 @@ void validateArguments(int numArgs, char **args)
 				if (GRIDSIZE < 7)
 				{
 					printf("%s\n", GRIDSIZE_ERR_MSG);
+					exit(1);
+				}
+				if (KERNELS > GRIDSIZE)
+				{
+					printf("%s\n", MAX_KERNEL_SIZE_ERR_MSG);
 					exit(1);
 				}
 			}
