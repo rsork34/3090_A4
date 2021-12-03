@@ -40,6 +40,7 @@ bool isValidArg(char *toCheck);
 #define KERNEL_ERR_MSG "Error: Number of Kernels must be a valid non-negative number greater than or equal to 1."
 #define GRIDSIZE_ERR_MSG "Error: Grid Size must be a valid non-negative number greater than or equal to 7."
 #define INITIALCONFIG_ERR_MSG "Error: Initial Configuration must be a valid non-negative number betwen 0 and 4 inclusive."
+#define PLACEHOLDER_CHAR 'Y'
 
 #endif
 
@@ -234,7 +235,7 @@ void randomGridInit(char *grid)
 		// 50% chance
 		if (rand() / (RAND_MAX / 3) == 0)
 		{
-			grid[i] = 'X';
+			grid[i] = PLACEHOLDER_CHAR;
 		}
 	}
 }
@@ -242,9 +243,9 @@ void randomGridInit(char *grid)
 void flipFlopGridInit(char *grid)
 {
 	int centerIndex = GRIDSIZE / 2;
-	grid[centerIndex - 2] = 'X';
-	grid[centerIndex] = 'X';
-	grid[centerIndex + 1] = 'X';
+	grid[centerIndex - 2] = PLACEHOLDER_CHAR;
+	grid[centerIndex] = PLACEHOLDER_CHAR;
+	grid[centerIndex + 1] = PLACEHOLDER_CHAR;
 }
 
 void spiderGridInit(char *grid)
@@ -253,20 +254,20 @@ void spiderGridInit(char *grid)
 	int startIndex = (GRIDSIZE / 2) - 3;
 	for (int i = startIndex; i < startIndex + spiderLength; i++)
 	{
-		grid[i] = 'X';
+		grid[i] = PLACEHOLDER_CHAR;
 	}
 }
 
 void gliderGridInit(char *grid)
 {
 	flipFlopGridInit(grid);
-	grid[GRIDSIZE / 2 + 2] = 'X';
+	grid[GRIDSIZE / 2 + 2] = PLACEHOLDER_CHAR;
 }
 
 void faceGridInit(char *grid)
 {
 	spiderGridInit(grid);
-	grid[GRIDSIZE / 2 + 3] = 'X';
+	grid[GRIDSIZE / 2 + 3] = PLACEHOLDER_CHAR;
 }
 
 cl_program build_program(cl_context ctx, cl_device_id dev, const char *filename)
