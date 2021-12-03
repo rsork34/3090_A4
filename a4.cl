@@ -10,6 +10,7 @@ __kernel void oclgrind(__global char *grid, __global int *gridSize, __global int
   int cellsPerKernel;
 
   // Calculate columns for kernel to work on
+  // TODO: logic if gridsize / kernelCount is not evenly divisible
   kernelCount = *numKernels;
   cellsPerKernel = (*gridSize) / kernelCount;
   startIndex = get_global_id(0) * cellsPerKernel;
