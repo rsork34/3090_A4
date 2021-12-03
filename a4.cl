@@ -90,18 +90,17 @@ __kernel void oclgrind(__global char *grid, __global int *gridSize) {
     if (grid[i] == '.') {
       // Cell is alive for next iteration
       if (liveNeighbours == 2 || liveNeighbours == 3) {
-        // TODO: REPLACE WITH RANK
         grid[i + rowLength] = rank;
       }
     }
     // Current cell is alive
     else {
       if (liveNeighbours == 2 || liveNeighbours == 4) {
-        // TODO: REPLACE WITH RANK
         grid[i + rowLength] = rank;
       }
     }
 
     // Barrier - when parallel
+    barrier(CLK_LOCAL_MEM_FENCE);
   }
 }
