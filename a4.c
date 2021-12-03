@@ -136,10 +136,15 @@ int main(int argc, char *argv[])
 	}
 
 	displayGrid(grid);
-	// TODO: FIX
-	//clReleaseKernel(kernel);
+	free(grid);
+	for (int i = 0; i < KERNELS; i++)
+	{
+		clReleaseKernel(kernel_arr[i]);
+	}
+	
 	clReleaseMemObject(gridBuffer);
 	clReleaseMemObject(sizeBuffer);
+	clReleaseMemObject(numKernelsBuffer);
 	clReleaseCommandQueue(queue);
 	clReleaseProgram(program);
 	clReleaseContext(context);
