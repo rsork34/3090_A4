@@ -6,7 +6,9 @@ Group Members:
 
 ## How to Run:
 Run `make`
+
 $ oclgrind ./a4 <-n #> <-s #> <-i #>
+
 
 **Parameter Requirements**:
 * Number of Kernels: -n # : where # must be greater than or equal to 1.
