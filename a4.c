@@ -46,21 +46,17 @@ bool isValidArg(char *toCheck);
 // Global variables initilized with DEFAULT values
 int KERNELS = 1;
 int GRIDSIZE = 20;
-int INITIALCONFIG = 0;
+int INITIALCONFIG = 1;
 
 int main(int argc, char *argv[])
 {
 	validateArguments(argc, argv);
 
-	// print statements below TO BE REMOVED
-	printf("KERNELS %d\n", KERNELS);
-	printf("GRIDSIZE %d\n", GRIDSIZE);
-	printf("INITIALCONFIG %d\n", INITIALCONFIG);
-
 	cl_device_id device;
 	cl_context context;
 	cl_program program;
 	cl_kernel kernel;
+	cl_kernel kernel_arr[KERNELS];
 	cl_command_queue queue;
 	cl_int err, num_groups;
 	size_t local_size, global_size, num_kernels;
@@ -68,7 +64,7 @@ int main(int argc, char *argv[])
 
 	char *grid = createGrid();
 	int gridSize = GRIDSIZE * GRIDSIZE + 1;
-	num_kernels = gridSize;
+	num_kernels = KERNELS;
 
 	/* Create device and context */
 	device = create_device();
@@ -82,9 +78,9 @@ int main(int argc, char *argv[])
 	program = build_program(context, device, PROGRAM_FILE);
 
 	// TODO: FIGURE THIS OUT
-	global_size = 8;
+	global_size = KERNELS;
 	local_size = KERNELS;
-	num_groups = global_size / local_size;
+	num_groups = 1;
 
 	gridBuffer = clCreateBuffer(context, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, gridSize * sizeof(char), grid, &err);
 	if (err < 0)
@@ -107,44 +103,47 @@ int main(int argc, char *argv[])
 		exit(1);
 	};
 
-	// Create kernel
-	kernel = clCreateKernel(program, KERNEL_FUNC, &err);
-	if (err < 0)
+	for (int i = 0; i < KERNELS; i++)
 	{
-		perror("Couldn't create a kernel");
-		exit(1);
-	};
+		kernel_arr[i] = clCreateKernel(program, KERNEL_FUNC, &err);
+		if (err < 0)
+		{
+			printf("Err: %d\n", err);
+			perror("Couldn't create a kernel");
+			exit(1);
+		};
 
-	/* Create kernel arguments */
-	err = clSetKernelArg(kernel, 0, sizeof(cl_mem), &gridBuffer);
-	err |= clSetKernelArg(kernel, 1, sizeof(cl_mem), &sizeBuffer);
-	if (err < 0)
-	{
-		perror("Couldn't create a kernel argument");
-		exit(1);
-	}
+		/* Create kernel arguments */
+		err = clSetKernelArg(kernel_arr[i], 0, sizeof(cl_mem), &gridBuffer);
+		err |= clSetKernelArg(kernel_arr[i], 1, sizeof(cl_mem), &sizeBuffer);
+		if (err < 0)
+		{
+			perror("Couldn't create a kernel argument");
+			exit(1);
+		}
 
-	/* Enqueue kernel */
-	err = clEnqueueNDRangeKernel(queue, kernel, 1, NULL, &num_kernels,
-															 &local_size, 0, NULL, NULL);
-	if (err < 0)
-	{
-		perror("Couldn't enqueue the kernel");
-		exit(1);
-	}
+		/* Enqueue kernel */
+		err = clEnqueueNDRangeKernel(queue, kernel_arr[i], 1, NULL, &num_kernels,
+																 &num_kernels, 0, NULL, NULL);
+		if (err < 0)
+		{
+			perror("Couldn't enqueue the kernel");
+			exit(1);
+		}
 
-	/* Read the kernel's output */
-	err = clEnqueueReadBuffer(queue, gridBuffer, CL_TRUE, 0,
-														sizeof(char) * gridSize, grid, 0, NULL, NULL);
-	if (err < 0)
-	{
-		perror("Couldn't read the buffer");
-		exit(1);
+		/* Read the kernel's output */
+		err = clEnqueueReadBuffer(queue, gridBuffer, CL_TRUE, 0,
+															sizeof(char) * gridSize, grid, 0, NULL, NULL);
+		if (err < 0)
+		{
+			perror("Couldn't read the buffer");
+			exit(1);
+		}
 	}
 
 	displayGrid(grid);
-
-	clReleaseKernel(kernel);
+	// TODO: FIX
+	//clReleaseKernel(kernel);
 	clReleaseMemObject(gridBuffer);
 	clReleaseMemObject(sizeBuffer);
 	clReleaseCommandQueue(queue);
