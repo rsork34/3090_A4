@@ -1,0 +1,4 @@
+*.out
+oclgrind
+a4
+.nfs*
